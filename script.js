@@ -7,7 +7,7 @@ const downloadLink = document.getElementById('download');
 
 // 啟動前置攝像頭
 navigator.mediaDevices.getUserMedia({
-    video: { facingMode: "user" }
+    video: { facingMode: { exact: "environment" } }
 })
 .then(function(stream) {
     video.srcObject = stream;
