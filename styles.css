@@ -1,0 +1,77 @@
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #f0f0f0;
+}
+
+#videoContainer {
+    position: relative;
+}
+
+video, canvas {
+    max-width: 100%;
+    height: auto;
+}
+
+.frame {
+    position: absolute;
+    border: 2px solid red;
+}
+
+#frameLeft {
+    left: 10%;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 26%;
+}
+
+#frameRight {
+    right: 10%;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 26%;
+}
+
+#frameBase {
+    left: 50%;
+    top: 70%;
+    transform: translateX(-50%);
+    width: 26%;
+    height: 40px;
+}
+
+#snap, #download {
+    margin-top: 10px;
+}
+
+.label {
+    position: absolute;
+    background-color: white;
+    padding: 2px 5px;
+    border: 1px solid black;
+    font-size: 12px;
+}
+
+#labelLeft {
+    left: 10%;
+    top: calc(50% - 13%);
+    transform: translateY(-50%);
+}
+
+#labelRight {
+    right: 10%;
+    top: calc(50% - 13%);
+    transform: translateY(-50%);
+}
+
+#labelBase {
+    left: 50%;
+    top: calc(70% - 20px);
+    transform: translateX(-50%);
+}

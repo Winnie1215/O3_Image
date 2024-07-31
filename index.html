@@ -4,74 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>拍照並儲存</title>
-    <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f0f0f0;
-        }
-        #videoContainer {
-            position: relative;
-        }
-        video, canvas {
-            max-width: 100%;
-            height: auto;
-        }
-        .frame {
-            position: absolute;
-            border: 2px solid red;
-        }
-        #frameLeft {
-            left: 10%;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 40px;
-            height: 26%;
-        }
-        #frameRight {
-            right: 10%;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 40px;
-            height: 26%;
-        }
-        #frameBase {
-            left: 50%;
-            top: 70%;
-            transform: translateX(-50%);
-            width: 26%;
-            height: 40px;
-        }
-        #snap, #download {
-            margin-top: 10px;
-        }
-        .label {
-            position: absolute;
-            background-color: white;
-            padding: 2px 5px;
-            border: 1px solid black;
-            font-size: 12px;
-        }
-        #labelLeft {
-            left: 10%;
-            top: calc(50% - 13%);
-            transform: translateY(-50%);
-        }
-        #labelRight {
-            right: 10%;
-            top: calc(50% - 13%);
-            transform: translateY(-50%);
-        }
-        #labelBase {
-            left: 50%;
-            top: calc(70% - 20px);
-            transform: translateX(-50%);
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <h1>攝像頭預覽及拍照</h1>
@@ -87,36 +20,6 @@
     <button id="snap">拍照</button>
     <canvas id="canvas" style="display:none;"></canvas>
     <a id="download" style="display:none;">下載照片</a>
-
-    <script>
-        // 獲取HTML元素
-        const video = document.getElementById('video');
-        const canvas = document.getElementById('canvas');
-        const context = canvas.getContext('2d');
-        const snapButton = document.getElementById('snap');
-        const downloadLink = document.getElementById('download');
-
-        // 啟動攝像頭
-        navigator.mediaDevices.getUserMedia({ video: true })
-            .then(function(stream) {
-                video.srcObject = stream;
-                video.play();
-            })
-            .catch(function(err) {
-                console.log("發生錯誤: " + err);
-            });
-
-        // 拍照功能
-        snapButton.addEventListener('click', function() {
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            context.drawImage(video, 0, 0, canvas.width, canvas.height);
-            const dataUrl = canvas.toDataURL('image/png');
-            downloadLink.href = dataUrl;
-            downloadLink.download = 'photo.png';
-            downloadLink.style.display = 'block';
-            downloadLink.textContent = '下載照片';
-        });
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
