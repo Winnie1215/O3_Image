@@ -23,55 +23,56 @@ video, canvas {
 }
 
 #frameLeft {
-    left: 10%;
+    left: 15%;
     top: 50%;
     transform: translateY(-50%);
-    width: 40px;
-    height: 26%;
+    width: 10%;
+    height: 30%;
 }
 
 #frameRight {
-    right: 10%;
+    right: 15%;
     top: 50%;
     transform: translateY(-50%);
-    width: 40px;
-    height: 26%;
+    width: 10%;
+    height: 30%;
 }
 
 #frameBase {
     left: 50%;
-    top: 70%;
+    top: 80%;
     transform: translateX(-50%);
-    width: 26%;
-    height: 40px;
+    width: 30%;
+    height: 10%;
 }
 
-#snap, #download {
+#snap, #analyze, #download {
     margin-top: 10px;
 }
 
 .label {
     position: absolute;
-    background-color: white;
+    color: red;
+    background-color: transparent;
     padding: 2px 5px;
-    border: 1px solid black;
     font-size: 12px;
+    border: none; /* 移除邊框 */
 }
 
 #labelLeft {
-    left: 10%;
-    top: calc(50% - 13%);
+    left: 15%;
+    top: calc(50% - 25%);
     transform: translateY(-50%);
 }
 
 #labelRight {
-    right: 10%;
-    top: calc(50% - 13%);
+    right: 15%;
+    top: calc(50% - 25%);
     transform: translateY(-50%);
 }
 
 #labelBase {
     left: 50%;
-    top: calc(70% - 20px);
+    top: calc(80% - 10%);
     transform: translateX(-50%);
 }
