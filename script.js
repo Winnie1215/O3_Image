@@ -1,61 +1,62 @@
-// 獲取HTML元素
 const video = document.getElementById('video');
 const canvas = document.getElementById('canvas');
 const context = canvas.getContext('2d');
 const snapButton = document.getElementById('snap');
 const analyzeButton = document.getElementById('analyze');
-const downloadLink = document.getElementById('download');
+const resultsDiv = document.getElementById('results');
 
-// 啟動前視鏡頭（後置鏡頭）
-navigator.mediaDevices.getUserMedia({
-    video: { facingMode: { exact: "environment" } }
-})
-.then(function(stream) {
-    video.srcObject = stream;
-    video.play();
-})
-.catch(function(err) {
-    console.log("發生錯誤: " + err);
-    alert("無法啟動前視鏡頭（後置鏡頭），請檢查設備是否支援。");
-});
+// 設置攝像頭
+navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+    .then(stream => {
+        video.srcObject = stream;
+    })
+    .catch(err => {
+        console.error("Error: " + err);
+    });
 
-// 拍照功能
-snapButton.addEventListener('click', function() {
+// 捕捉照片
+snapButton.addEventListener('click', () => {
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
     context.drawImage(video, 0, 0, canvas.width, canvas.height);
-    const dataUrl = canvas.toDataURL('image/png');
-    downloadLink.href = dataUrl;
-    downloadLink.download = 'photo.png';
-    downloadLink.style.display = 'block';
-    downloadLink.textContent = '下載照片';
-    analyzeButton.style.display = 'block';
 });
 
 // 分析功能
 analyzeButton.addEventListener('click', function() {
     const imgData = context.getImageData(0, 0, canvas.width, canvas.height);
-    const ppmValues = {
-        '0.2': getAverageColor(imgData, 15, 50, 0.5),
-        '5': getAverageColor(imgData, 85, 50, 0.5)
-    };
-    const sampleValue = getAverageColor(imgData, 50, 80, 0.1);
-    console.log('PPM Values:', ppmValues);
-    console.log('Sample Value:', sampleValue);
+    const ppm0_2Box = getBoxCoordinates('ppm0_2');
+    const ppm5Box = getBoxCoordinates('ppm5');
+    const sampleBox = getBoxCoordinates('sample');
 
-    // 根據PPM數值推算Sample的濃度
+    const ppmValues = {
+        '0.2': getAverageColor(imgData, ppm0_2Box),
+        '5': getAverageColor(imgData, ppm5Box)
+    };
+    const sampleValue = getAverageColor(imgData, sampleBox);
+
+    displayResults(ppmValues, sampleValue);
+
     const samplePpm = calculatePpm(ppmValues, sampleValue);
     alert('Sample PPM: ' + samplePpm);
 });
 
-function getAverageColor(imgData, centerXPercent, centerYPercent, heightPercent) {
-    const centerX = Math.floor(imgData.width * (centerXPercent / 100));
-    const centerY = Math.floor(imgData.height * (centerYPercent / 100));
-    const halfHeight = Math.floor(imgData.height * (heightPercent / 2));
-    
+function getBoxCoordinates(id) {
+    const box = document.getElementById(id);
+    const rect = box.getBoundingClientRect();
+    const videoRect = video.getBoundingClientRect();
+
+    const x = (rect.left - videoRect.left) / videoRect.width * video.videoWidth;
+    const y = (rect.top - videoRect.top) / videoRect.height * video.videoHeight;
+    const width = rect.width / videoRect.width * video.videoWidth;
+    const height = rect.height / videoRect.height * video.videoHeight;
+
+    return { x, y, width, height };
+}
+
+function getAverageColor(imgData, box) {
     let r = 0, g = 0, b = 0, count = 0;
-    for (let y = centerY - halfHeight; y < centerY + halfHeight; y++) {
-        for (let x = centerX - 1; x <= centerX + 1; x++) {
+    for (let y = box.y; y < box.y + box.height; y++) {
+        for (let x = box.x; x < box.x + box.width; x++) {
             const index = (y * imgData.width + x) * 4;
             r += imgData.data[index];
             g += imgData.data[index + 1];
@@ -68,25 +69,28 @@ function getAverageColor(imgData, centerXPercent, centerYPercent, heightPercent)
 }
 
 function calculatePpm(ppmValues, sampleValue) {
-    const ppmKeys = Object.keys(ppmValues).map(Number).sort((a, b) => a - b);
-    let closestPpm = ppmKeys[0];
-    let closestDifference = getColorDifference(ppmValues[closestPpm], sampleValue);
+    const ppm0_2 = ppmValues['0.2'];
+    const ppm5 = ppmValues['5'];
+    const sampleColor = sampleValue;
 
-    for (const ppm of ppmKeys) {
-        const difference = getColorDifference(ppmValues[ppm], sampleValue);
-        if (difference < closestDifference) {
-            closestDifference = difference;
-            closestPpm = ppm;
-        }
-    }
+    const ppm0_2Sum = ppm0_2.r + ppm0_2.g + ppm0_2.b;
+    const ppm5Sum = ppm5.r + ppm5.g + ppm5.b;
+    const sampleSum = sampleColor.r + sampleColor.g + sampleColor.b;
 
-    return closestPpm;
+    const ppmRange = 5 - 0.2;
+    const colorRange = ppm0_2Sum - ppm5Sum;
+    const sampleOffset = ppm0_2Sum - sampleSum;
+
+    const samplePpm = 0.2 + (sampleOffset / colorRange) * ppmRange;
+
+    return samplePpm.toFixed(2) + ' ppm';
 }
 
-function getColorDifference(color1, color2) {
-    return Math.sqrt(
-        Math.pow(color1.r - color2.r, 2) +
-        Math.pow(color1.g - color2.g, 2) +
-        Math.pow(color1.b - color2.b, 2)
-    );
+function displayResults(ppmValues, sampleValue) {
+    resultsDiv.innerHTML = `
+        <p>0.2 ppm: R=${ppmValues['0.2'].r.toFixed(2)}, G=${ppmValues['0.2'].g.toFixed(2)}, B=${ppmValues['0.2'].b.toFixed(2)}</p>
+        <p>5 ppm: R=${ppmValues['5'].r.toFixed(2)}, G=${ppmValues['5'].g.toFixed(2)}, B=${ppmValues['5'].b.toFixed(2)}</p>
+        <p>Sample: R=${sampleValue.r.toFixed(2)}, G=${sampleValue.g.toFixed(2)}, B=${sampleValue.b.toFixed(2)}</p>
+    `;
 }
+

@@ -1,78 +1,76 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 body {
     display: flex;
-    flex-direction: column;
-    align-items: center;
     justify-content: center;
+    align-items: center;
     height: 100vh;
-    margin: 0;
     background-color: #f0f0f0;
 }
 
-#videoContainer {
+.container {
     position: relative;
 }
 
-video, canvas {
-    max-width: 100%;
-    height: auto;
+video {
+    display: block;
+    width: 100%;
 }
 
-.frame {
-    position: absolute;
-    border: 2px solid red;
+canvas {
+    display: none;
 }
 
-#frameLeft {
-    left: 15%;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 10%;
-    height: 30%;
-}
-
-#frameRight {
-    right: 15%;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 10%;
-    height: 30%;
-}
-
-#frameBase {
-    left: 50%;
-    top: 80%;
-    transform: translateX(-50%);
-    width: 30%;
-    height: 10%;
-}
-
-#snap, #analyze, #download {
+.controls {
     margin-top: 10px;
+    text-align: center;
+}
+
+.label-boxes {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
 }
 
 .label {
     position: absolute;
     color: red;
+    font-size: 16px;
+    font-weight: bold;
+    border: 2px solid red;
+    text-align: center;
     background-color: transparent;
-    padding: 2px 5px;
-    font-size: 12px;
-    border: none; /* 移除邊框 */
 }
 
-#labelLeft {
+#ppm0_2 {
     left: 15%;
-    top: calc(50% - 25%);
-    transform: translateY(-50%);
+    top: 20%;
+    width: 30%;
+    height: 10%;
 }
 
-#labelRight {
-    right: 15%;
-    top: calc(50% - 25%);
-    transform: translateY(-50%);
+#ppm5 {
+    left: 65%;
+    top: 20%;
+    width: 30%;
+    height: 10%;
 }
 
-#labelBase {
-    left: 50%;
-    top: calc(80% - 10%);
-    transform: translateX(-50%);
+#sample {
+    left: 40%;
+    top: 70%;
+    width: 20%;
+    height: 10%;
+}
+
+.results {
+    margin-top: 10px;
+    font-size: 16px;
+    color: #333;
 }

@@ -3,24 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>拍照並儲存</title>
+    <title>Ozone Concentration Analyzer</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>攝像頭預覽及拍照</h1>
-    <div id="videoContainer">
-        <video id="video" autoplay playsinline></video>
-        <div id="frameLeft" class="frame"></div>
-        <div id="labelLeft" class="label">0.2 ppm</div>
-        <div id="frameRight" class="frame"></div>
-        <div id="labelRight" class="label">5 ppm</div>
-        <div id="frameBase" class="frame"></div>
-        <div id="labelBase" class="label">Sample</div>
+    <div class="container">
+        <video id="video" autoplay></video>
+        <canvas id="canvas"></canvas>
+        <div class="controls">
+            <button id="snap">拍照</button>
+            <button id="analyze">分析</button>
+        </div>
+        <div class="label-boxes">
+            <div class="label" id="ppm0_2">0.2 ppm</div>
+            <div class="label" id="ppm5">5 ppm</div>
+            <div class="label" id="sample">Sample</div>
+        </div>
+        <div class="results" id="results"></div>
     </div>
-    <button id="snap">拍照</button>
-    <canvas id="canvas" style="display:none;"></canvas>
-    <button id="analyze" style="display:none;">分析</button>
-    <a id="download" style="display:none;">下載照片</a>
     <script src="script.js"></script>
 </body>
 </html>
