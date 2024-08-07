@@ -5,6 +5,13 @@ const snapButton = document.getElementById('snap');
 const analyzeButton = document.getElementById('analyze');
 const resultsDiv = document.getElementById('results');
 
+// 檢查 DOM 元素是否正確獲取
+console.log('video:', video);
+console.log('canvas:', canvas);
+console.log('snapButton:', snapButton);
+console.log('analyzeButton:', analyzeButton);
+console.log('resultsDiv:', resultsDiv);
+
 // 設置攝像頭
 navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
     .then(stream => {
@@ -16,6 +23,7 @@ navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
 
 // 捕捉照片
 snapButton.addEventListener('click', () => {
+    console.log('Snap button clicked');
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
     context.drawImage(video, 0, 0, canvas.width, canvas.height);
@@ -23,6 +31,7 @@ snapButton.addEventListener('click', () => {
 
 // 分析功能
 analyzeButton.addEventListener('click', function() {
+    console.log('Analyze button clicked');
     const imgData = context.getImageData(0, 0, canvas.width, canvas.height);
     const ppm0_2Box = getBoxCoordinates('ppm0_2');
     const ppm5Box = getBoxCoordinates('ppm5');
@@ -93,4 +102,3 @@ function displayResults(ppmValues, sampleValue) {
         <p>Sample: R=${sampleValue.r.toFixed(2)}, G=${sampleValue.g.toFixed(2)}, B=${sampleValue.b.toFixed(2)}</p>
     `;
 }
-
