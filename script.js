@@ -7,14 +7,28 @@ const redBox1 = document.getElementById('redBox1');
 const redBox2 = document.getElementById('redBox2');
 const redBox3 = document.getElementById('redBox3');
 
-// 啟動手機攝像頭
-navigator.mediaDevices.getUserMedia({ video: true })
-    .then(stream => {
+// 啟動攝像頭
+async function startCamera() {
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ 
+            video: { 
+                facingMode: 'environment' // 優先使用後置攝像頭
+            } 
+        });
         video.srcObject = stream;
-    })
-    .catch(err => {
+        video.onloadedmetadata = () => {
+            video.play();
+        };
+        analyzeBtn.disabled = false;
+    } catch (err) {
         console.error("無法啟動攝像頭: ", err);
-    });
+        result.innerHTML = `錯誤：無法啟動攝像頭。${err.message}`;
+        analyzeBtn.disabled = true;
+    }
+}
+
+// 初始化
+startCamera();
 
 // 計算指定框中的顏色平均值
 function getAverageColor(box) {
@@ -72,6 +86,6 @@ analyzeBtn.addEventListener('click', function() {
         紅框1 RGB: (${color1.r.toFixed(3)}, ${color1.g.toFixed(3)}, ${color1.b.toFixed(3)})<br>
         紅框2 RGB: (${color2.r.toFixed(3)}, ${color2.g.toFixed(3)}, ${color2.b.toFixed(3)})<br>
         紅框3 RGB: (${color3.r.toFixed(3)}, ${color3.g.toFixed(3)}, ${color3.b.toFixed(3)})<br>
-		臭氧濃度: $ {o3D.toFixed(3)}
+		臭氧濃度: (${o3D.toFixed(3)})
     `;
 });
