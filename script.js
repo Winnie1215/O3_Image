@@ -1,104 +1,77 @@
-const video = document.getElementById('video');
-const canvas = document.getElementById('canvas');
-const context = canvas.getContext('2d');
-const snapButton = document.getElementById('snap');
-const analyzeButton = document.getElementById('analyze');
-const resultsDiv = document.getElementById('results');
+const video = document.getElementById('camera');
+const analyzeBtn = document.getElementById('analyzeBtn');
+const result = document.getElementById('result');
 
-// 檢查 DOM 元素是否正確獲取
-console.log('video:', video);
-console.log('canvas:', canvas);
-console.log('snapButton:', snapButton);
-console.log('analyzeButton:', analyzeButton);
-console.log('resultsDiv:', resultsDiv);
+// 紅框元素
+const redBox1 = document.getElementById('redBox1');
+const redBox2 = document.getElementById('redBox2');
+const redBox3 = document.getElementById('redBox3');
 
-// 設置攝像頭
-navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+// 啟動手機攝像頭
+navigator.mediaDevices.getUserMedia({ video: true })
     .then(stream => {
         video.srcObject = stream;
     })
     .catch(err => {
-        console.error("Error: " + err);
+        console.error("無法啟動攝像頭: ", err);
     });
 
-// 捕捉照片
-snapButton.addEventListener('click', () => {
-    console.log('Snap button clicked');
+// 計算指定框中的顏色平均值
+function getAverageColor(box) {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    
+    // 設定 canvas 大小為攝像頭畫面的解析度
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
-    context.drawImage(video, 0, 0, canvas.width, canvas.height);
-});
+    // 將攝像頭畫面繪製到 canvas
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-// 分析功能
-analyzeButton.addEventListener('click', function() {
-    console.log('Analyze button clicked');
-    const imgData = context.getImageData(0, 0, canvas.width, canvas.height);
-    const ppm0_2Box = getBoxCoordinates('ppm0_2');
-    const ppm5Box = getBoxCoordinates('ppm5');
-    const sampleBox = getBoxCoordinates('sample');
-
-    const ppmValues = {
-        '0.2': getAverageColor(imgData, ppm0_2Box),
-        '5': getAverageColor(imgData, ppm5Box)
-    };
-    const sampleValue = getAverageColor(imgData, sampleBox);
-
-    displayResults(ppmValues, sampleValue);
-
-    const samplePpm = calculatePpm(ppmValues, sampleValue);
-    alert('Sample PPM: ' + samplePpm);
-});
-
-function getBoxCoordinates(id) {
-    const box = document.getElementById(id);
-    const rect = box.getBoundingClientRect();
+    // 取得視頻框的邊界和紅框的邊界
     const videoRect = video.getBoundingClientRect();
+    const boxRect = box.getBoundingClientRect();
 
-    const x = (rect.left - videoRect.left) / videoRect.width * video.videoWidth;
-    const y = (rect.top - videoRect.top) / videoRect.height * video.videoHeight;
-    const width = rect.width / videoRect.width * video.videoWidth;
-    const height = rect.height / videoRect.height * video.videoHeight;
+    // 計算視頻的縮放比例（因為視頻的解析度和顯示大小可能不同）
+    const scaleX = video.videoWidth / videoRect.width;
+    const scaleY = video.videoHeight / videoRect.height;
 
-    return { x, y, width, height };
-}
+    // 計算紅框在視頻上的座標與大小
+    const boxX = (boxRect.left - videoRect.left) * scaleX;
+    const boxY = (boxRect.top - videoRect.top) * scaleY;
+    const boxWidth = boxRect.width * scaleX;
+    const boxHeight = boxRect.height * scaleY;
 
-function getAverageColor(imgData, box) {
+    // 取得紅框內的像素數據
+    const imageData = ctx.getImageData(boxX, boxY, boxWidth, boxHeight).data;
+
+    // 計算紅框內的 RGB 平均值
     let r = 0, g = 0, b = 0, count = 0;
-    for (let y = box.y; y < box.y + box.height; y++) {
-        for (let x = box.x; x < box.x + box.width; x++) {
-            const index = (y * imgData.width + x) * 4;
-            r += imgData.data[index];
-            g += imgData.data[index + 1];
-            b += imgData.data[index + 2];
-            count++;
-        }
+    for (let i = 0; i < imageData.length; i += 4) {
+        r += imageData[i];     // Red
+        g += imageData[i + 1]; // Green
+        b += imageData[i + 2]; // Blue
+        count++;
     }
 
+    // 回傳紅框內的平均 RGB 顏色
     return { r: r / count, g: g / count, b: b / count };
 }
 
-function calculatePpm(ppmValues, sampleValue) {
-    const ppm0_2 = ppmValues['0.2'];
-    const ppm5 = ppmValues['5'];
-    const sampleColor = sampleValue;
+// 點擊「分析」按鈕時，計算三個紅框的 RGB 值並分別顯示
+analyzeBtn.addEventListener('click', function() {
+    // 分別取得每個紅框的平均 RGB
+    const color1 = getAverageColor(redBox1);
+    const color2 = getAverageColor(redBox2);
+    const color3 = getAverageColor(redBox3);
+	
+// 計算濃度
+    const o3D = color1.r - color3.r
 
-    const ppm0_2Sum = ppm0_2.r + ppm0_2.g + ppm0_2.b;
-    const ppm5Sum = ppm5.r + ppm5.g + ppm5.b;
-    const sampleSum = sampleColor.r + sampleColor.g + sampleColor.b;
-
-    const ppmRange = 5 - 0.2;
-    const colorRange = ppm0_2Sum - ppm5Sum;
-    const sampleOffset = ppm0_2Sum - sampleSum;
-
-    const samplePpm = 0.2 + (sampleOffset / colorRange) * ppmRange;
-
-    return samplePpm.toFixed(2) + ' ppm';
-}
-
-function displayResults(ppmValues, sampleValue) {
-    resultsDiv.innerHTML = `
-        <p>0.2 ppm: R=${ppmValues['0.2'].r.toFixed(2)}, G=${ppmValues['0.2'].g.toFixed(2)}, B=${ppmValues['0.2'].b.toFixed(2)}</p>
-        <p>5 ppm: R=${ppmValues['5'].r.toFixed(2)}, G=${ppmValues['5'].g.toFixed(2)}, B=${ppmValues['5'].b.toFixed(2)}</p>
-        <p>Sample: R=${sampleValue.r.toFixed(2)}, G=${sampleValue.g.toFixed(2)}, B=${sampleValue.b.toFixed(2)}</p>
+    // 分別顯示三個紅框的 RGB 結果
+    result.innerHTML = `
+        紅框1 RGB: (${color1.r.toFixed(3)}, ${color1.g.toFixed(3)}, ${color1.b.toFixed(3)})<br>
+        紅框2 RGB: (${color2.r.toFixed(3)}, ${color2.g.toFixed(3)}, ${color2.b.toFixed(3)})<br>
+        紅框3 RGB: (${color3.r.toFixed(3)}, ${color3.g.toFixed(3)}, ${color3.b.toFixed(3)})<br>
+		臭氧濃度: $ {o3D.toFixed(3)}
     `;
-}
+});
