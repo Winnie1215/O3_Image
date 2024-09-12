@@ -1,26 +1,48 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ozone Concentration Analyzer</title>
+    <title>攝像頭顏色分析</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <h1>顏色分析定量</h1>
     <div class="container">
-        <video id="video" autoplay></video>
-        <canvas id="canvas"></canvas>
-        <div class="controls">
-            <button id="snap">拍照</button>
-            <button id="analyze">分析</button>
-        </div>
-        <div class="label-boxes">
-            <div class="label" id="ppm0_2">0.2 ppm</div>
-            <div class="label" id="ppm5">5 ppm</div>
-            <div class="label" id="sample">Sample</div>
-        </div>
-        <div class="results" id="results"></div>
-    </div>
+    <video id="camera" autoplay></video>
+
+    <!-- 紅框1 -->
+    <div id="redBox1" class="redBox"></div>
+    
+    <!-- 紅框2 -->
+    <div id="redBox2" class="redBox"></div>
+    
+    <!-- 紅框3 -->
+    <div id="redBox3" class="redBox"></div>
+
+    <button id="analyzeBtn">分析</button>
+    <p id="result">RGB: (R, G, B)</p>
+</div>
+
     <script src="script.js"></script>
 </body>
 </html>
+
+
+
+
+<div class="container">
+    <video id="camera" autoplay></video>
+
+    <!-- 紅框1 -->
+    <div id="redBox1" class="redBox"></div>
+    
+    <!-- 紅框2 -->
+    <div id="redBox2" class="redBox"></div>
+    
+    <!-- 紅框3 -->
+    <div id="redBox3" class="redBox"></div>
+
+    <button id="analyzeBtn">分析</button>
+    <p id="result">RGB: (R, G, B)</p>
+</div>
