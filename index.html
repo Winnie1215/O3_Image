@@ -7,18 +7,24 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>顏色分析定量</h1>
+    <h1>臭氧顏色分析定量</h1>
     <div class="container">
     <video id="camera" autoplay></video>
 
     <!-- 紅框1 -->
-    <div id="redBox1" class="redBox"></div>
+    <div id="redBox1" class="redBox">
+	<span class="boxLabel">1ppm</span> 
+	</div>
     
     <!-- 紅框2 -->
-    <div id="redBox2" class="redBox"></div>
+    <div id="redBox2" class="redBox">
+	<span class="boxLabel">sample</span> 
+	</div>
     
     <!-- 紅框3 -->
-    <div id="redBox3" class="redBox"></div>
+    <div id="redBox3" class="redBox">
+	<span class="boxLabel">2ppm</span> 
+	</div>
 
     <button id="analyzeBtn">分析</button>
     <p id="result">RGB: (R, G, B)</p>
