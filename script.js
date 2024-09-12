@@ -79,13 +79,13 @@ analyzeBtn.addEventListener('click', function() {
     const color3 = getAverageColor(redBox3);
 	
 // 計算濃度
-    const o3D = color1.r - color3.r
+    const o3D = 1- (1-2)/(color1.r - color3.r)*(color1.r-color2.r)
 
     // 分別顯示三個紅框的 RGB 結果
     result.innerHTML = `
-        紅框1 RGB: (${color1.r.toFixed(3)}, ${color1.g.toFixed(3)}, ${color1.b.toFixed(3)})<br>
-        紅框2 RGB: (${color2.r.toFixed(3)}, ${color2.g.toFixed(3)}, ${color2.b.toFixed(3)})<br>
-        紅框3 RGB: (${color3.r.toFixed(3)}, ${color3.g.toFixed(3)}, ${color3.b.toFixed(3)})<br>
-		臭氧濃度: (${o3D.toFixed(3)})
+        1ppm RGB: (${color1.r.toFixed(3)}, ${color1.g.toFixed(3)}, ${color1.b.toFixed(3)})<br>
+        Sample RGB: (${color2.r.toFixed(3)}, ${color2.g.toFixed(3)}, ${color2.b.toFixed(3)})<br>
+        2ppm RGB: (${color3.r.toFixed(3)}, ${color3.g.toFixed(3)}, ${color3.b.toFixed(3)})<br>
+		臭氧濃度: (${o3D.toFixed(3)} ppm)
     `;
 });
